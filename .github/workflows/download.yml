@@ -28,10 +28,10 @@ jobs:
           curl -L -o "assets.zip" "https://github.com/InventivetalentDev/minecraft-assets/archive/refs/tags/$tag.zip"
           unzip assets.zip > /dev/null
           cd "minecraft-assets-$tag"
-          echo "#EXTM3U" > playlist.m3u8
-          find . -type f -name "*.ogg" | grep -E "(records|music)" >> playlist.m3u8
+          find . -type f -name "*.ogg" | grep -E "(records|music)" > playlist.m3u8
           sed -ie "s/\.\//https:\/\/raw.githubusercontent.com\/InventivetalentDev\/minecraft-assets\/$tag\//g" playlist.m3u8
-          awk -i inplace '{print gensub("h.*/", "#EXTINF:-1,", 1); print}'
+          gawk -i inplace -F'[/.]' '{print "#EXTINF:-1," $(NF-1); print}' playlist.m3u8
+          echo -ne "#EXTM3U\n$(cat playlist.m3u8)" > playlist.m3u8
           mv playlist.m3u8 ..; cd ..
           rm -rf assets.zip "minecraft-assets-$tag"
       - name: Push
